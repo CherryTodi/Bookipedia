@@ -40,7 +40,7 @@ function Banner() {
                  
            
              </div>
-             <button className="btn btn-active btn-secondary mt-3">Secondary</button>
+             <button className="btn btn-active btn-secondary mt-3">Get Started</button>
            
             </div>{/*left div ko left saaman ke niche band karo*/}
 

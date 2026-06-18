@@ -1,14 +1,44 @@
 import React from 'react'
 import { Link } from "react-router-dom";
 import { useForm } from "react-hook-form";
+import axios from "axios";
+import toast, { Toaster } from 'react-hot-toast';
+
 function Login() {
     const {
       register,
       handleSubmit,
       formState: { errors },
-      } = useForm()
+      } = useForm();
 
-    const onSubmit = (data) => console.log(data);
+    const onSubmit =async (data) =>{ //console.log(data);
+      const  userInfo={ //here we get the the user data after this we need to call api
+        email:data.email,
+        password:data.password,
+      };
+      //for api
+       await axios.post("http://localhost:4001/user/login", userInfo)//(api ka url mai userinfo se information store karana hai)
+      .then((res) => { //promise//either accept or reject
+      console.log(res.data);
+      if (res.data) {  //agar response  data hai toh signup kardenge successfully
+        toast.success("Logged in Successfully");
+        document.getElementById("login_modal").close();
+        setTimeout(()=>{
+           window.location.reload();//page apne aap reload hojaye
+           localStorage.setItem("Users",JSON.stringify(res.data.user));//we want the message to be seen in local storage without any message
+        },1000);
+         
+      }
+     
+    }).catch((err) => { //to show error
+      if(err.response){
+      console.log(err);  //to display meesage for incorrect login //message is brought form backend
+      toast.error("Error: " + err.response.data.message );
+      setTimeoout(()=>{},2000);
+      }
+
+    });
+    };
   return (
     <div>
         {/* You can open the modal using document.getElementById('ID').showModal() method */}

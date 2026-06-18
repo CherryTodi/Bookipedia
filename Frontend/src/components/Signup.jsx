@@ -1,14 +1,46 @@
 import React from 'react'
-import { Link } from "react-router-dom";
+import { Link,Navigate,useLocation,useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
+import axios from "axios";
+import toast, { Toaster } from 'react-hot-toast';
+import Login from "./Login";
 function Signup() {
+  const location=useLocation();
+  const navigate=useNavigate();
+  const from=location.state?.from?.pathname ||"/";
     const {
           register,
           handleSubmit,
           formState: { errors },
-          } = useForm()
+          } = useForm();
     
-        const onSubmit = (data) => console.log(data);
+        const onSubmit =async (data) =>{ //console.log(data);
+        const  userInfo={ //here we get the the user data after this we need to call api
+        fullname:data.fullname, //change name to fullname whrever it is
+        email:data.email,
+        password:data.password,
+      };
+      //for api
+       await axios
+      .post("http://localhost:4001/user/signup", userInfo)//(api ka url mai userinfo se information store karana hai)
+      .then((res) => { //promise//either accept or reject
+          console.log(res.data);
+          if (res.data) {  //agar response  data hai toh signup kardenge successfully
+            toast.success("Signup Successfully");
+            navigate(from, {replace:true});
+            //to navigate to home page
+      }
+      localStorage.setItem("Users",JSON.stringify(res.data.user));//we want the message to be seen in local storage without any message
+    })
+      .catch((err) => { //to show error
+      if(err.response){
+      console.log(err);  //to display meesage for incorrect login //message is brought form backend
+      toast.error("Error: " + err.response.data.message );
+}
+    });
+
+
+    };
   return (
     <div className="flex h-screen items-center justify-center bg-gray-100">
      <div className="max-w-md w-full">
@@ -35,10 +67,10 @@ function Signup() {
           type="text"
           placeholder="Enter your fullname"
           className="w-80 px-3 py-1 border rounded-md outline-none"
-          {...register("name", { required: true })}
+          {...register("fullname", { required: true })}
           />
           <br />
-          {errors.name && (
+          {errors.fullname && (
              <span className="text-sm text-red-500">
                 This field is required 
                 </span>

@@ -1,20 +1,36 @@
-import React from 'react'
+import React, {useEffect,useState} from "react";
 import Cards from "../Cards"; //Since Cards.jsx is one folder above components, use:
 import SliderModule from "react-slick";
 const Slider = SliderModule.default
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 
-import list from "../list.json"; //ek folder do folder phir public ke andar hai list.json*/
+import axios from "axios";
 
 function Freebook(){
-    const filterData = list.filter((data)=>data.category==="Free"); //Filter is function in array to filter how eemts based on it
+   const[book,setBook]=useState([]);
+    useEffect(()=>{
+        const getBook=async ()=>{
+            try{
+                const res=await axios.get("http://localhost:4001/book");
+                console.log(res.data);
+                const data=res.data.filter((data)=>data.category==="Free");
+                setBook(data); //data function ko yaha de re h
+            } catch (error){
+                console.log(error);
+            }
+            };
+            getBook(); //calling it
+        
+    },[] );
+   
+    //const filterData = list.filter((data)=>data.category==="Free"); //Filter is function in array to filter how eemts based on it
      var settings = {
     dots: true,
     infinite: false, //react slick //responsive
     speed: 500,
-    slidesToShow: 4,
-    slidesToScroll: 4,
+    slidesToShow: 2,
+    slidesToScroll: 1,
     initialSlide: 0,
     responsive: [
       {
@@ -55,7 +71,7 @@ function Freebook(){
             </div> {/*//heading or para ko separate div mai rakhte h*/}{/*In JSX, you cannot write comments like normal JavaScript after HTML tags */}
         <div>   
             <Slider {...settings}>
-  {filterData.map((item) => (
+  {book.map((item) => (
     <Cards item={item} key={item.id} />
   ))}
 </Slider>
